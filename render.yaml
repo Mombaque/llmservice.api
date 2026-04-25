@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: llmservice-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: InternalApiKey
+        sync: false
+      - key: OpenAI__ApiKey
+        sync: false
+      - key: OpenAI__DefaultModel
+        sync: false
+      - key: OpenAI__BaseUrl
+        value: https://api.openai.com/v1/
+      - key: OpenAI__TimeoutSeconds
+        value: 60
+      - key: Resilience__RetryCount
+        value: 2
+      - key: Resilience__RetryBaseDelayMs
+        value: 300

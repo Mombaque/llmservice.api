@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  llmservice-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5002
+      - InternalApiKey=${LLM_SERVICE_INTERNAL_API_KEY}
+      - OpenAI__ApiKey=${OPENAI_API_KEY}
+      - OpenAI__DefaultModel=${OPENAI_DEFAULT_MODEL}
+      - OpenAI__BaseUrl=https://api.openai.com/v1/
+      - OpenAI__TimeoutSeconds=60
+      - Resilience__RetryCount=2
+      - Resilience__RetryBaseDelayMs=300
+    networks:
+      - backend-dev-network
+
+networks:
+  backend-dev-network:
+    external: true
