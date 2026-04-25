@@ -11,7 +11,7 @@ RUN dotnet publish "LlmService.Api.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 5002
-ENV ASPNETCORE_URLS=http://+:5002
+EXPOSE 5004
+ENV ASPNETCORE_URLS=http://+:5004
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "LlmService.Api.dll"]
