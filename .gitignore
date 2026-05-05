@@ -55,3 +55,7 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+.idea/.idea.llmservice.api/.idea/encodings.xml
+.idea/.idea.llmservice.api/.idea/indexLayout.xml
+.idea/.idea.llmservice.api/.idea/vcs.xml
+appsettings.Development.json

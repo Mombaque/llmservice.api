@@ -10,7 +10,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5004
-      - InternalApiKey=${LLM_SERVICE_INTERNAL_API_KEY}
+      - Jwt__Key=${LLM_SERVICE_JWT_KEY}
+      - Jwt__Issuer=${LLM_SERVICE_JWT_ISSUER}
+      - Jwt__Audience=${LLM_SERVICE_JWT_AUDIENCE}
       - OpenAI__ApiKey=${OPENAI_API_KEY}
       - OpenAI__DefaultModel=${OPENAI_DEFAULT_MODEL}
       - OpenAI__BaseUrl=https://api.openai.com/v1/

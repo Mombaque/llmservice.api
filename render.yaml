@@ -7,7 +7,11 @@ services:
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      - key: InternalApiKey
+      - key: Jwt__Key
+        sync: false
+      - key: Jwt__Issuer
+        sync: false
+      - key: Jwt__Audience
         sync: false
       - key: OpenAI__ApiKey
         sync: false
