@@ -19,22 +19,32 @@ public class OpenAILlmProviderClient(
         CancellationToken cancellationToken)
     {
         var model = request.Model ?? options.Value.DefaultModel;
-        if (string.IsNullOrWhiteSpace(model))
-            throw new LlmProviderException("llm_model_not_configured", "OpenAI model is not configured.", StatusCodes.Status500InternalServerError);
+        OpenAIResponse openAIResponse = new();
+        try
+        {
+            if (string.IsNullOrWhiteSpace(model))
+                throw new LlmProviderException("llm_model_not_configured", "OpenAI model is not configured.", StatusCodes.Status500InternalServerError);
 
-        var openAIRequest = MapToOpenAIRequest(request, model);
-        var stopwatch = Stopwatch.StartNew();
-        var openAIResponse = await openAIClient.CompleteAsync(openAIRequest, requestId, cancellationToken);
-        stopwatch.Stop();
+            var openAIRequest = MapToOpenAIRequest(request, model);
+            var stopwatch = Stopwatch.StartNew();
+            openAIResponse = await openAIClient.CompleteAsync(openAIRequest, requestId, cancellationToken);
+            stopwatch.Stop();
 
-        logger.LogInformation(
-            "LLM completion normalized RequestId={RequestId} Provider={Provider} Model={Model} DurationMs={DurationMs} InputTokens={InputTokens} OutputTokens={OutputTokens}",
-            requestId,
-            ProviderName,
-            model,
-            stopwatch.ElapsedMilliseconds,
-            openAIResponse.Usage.PromptTokens,
-            openAIResponse.Usage.CompletionTokens);
+            logger.LogInformation(
+                "LLM completion normalized RequestId={RequestId} Provider={Provider} Model={Model} DurationMs={DurationMs} InputTokens={InputTokens} OutputTokens={OutputTokens}",
+                requestId,
+                ProviderName,
+                model,
+                stopwatch.ElapsedMilliseconds,
+                openAIResponse.Usage.PromptTokens,
+                openAIResponse.Usage.CompletionTokens);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
 
         return MapToChatCompletionResponse(openAIResponse, model, requestId);
     }

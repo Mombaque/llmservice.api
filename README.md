@@ -33,6 +33,7 @@ Required JWT claims:
   - `morita-api`
   - `promotora-api`
   - `clinic-api`
+  - `aicontrol-api`
 
 `LlmService` validates tokens only. Consuming APIs are responsible for generating and sending the token.
 

@@ -43,13 +43,13 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("InternalService", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim("service", "morita-api", "promotora-api", "clinic-api");
+        policy.RequireClaim("service", "morita-api", "promotora-api", "clinic-api", "aicontrol-api");
     });
 
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
         .RequireAuthenticatedUser()
-        .RequireClaim("service", "morita-api", "promotora-api", "clinic-api")
+        .RequireClaim("service", "morita-api", "promotora-api", "clinic-api", "aicontrol-api")
         .Build();
 });
 
