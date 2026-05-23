@@ -1,29 +1,29 @@
 using System.Text.Json.Serialization;
 
-namespace LlmService.Api.Providers.OpenAI;
+namespace LlmService.Api.Providers.ChatCompletions;
 
-public class OpenAIResponse
+public class ChatCompletionsProviderResponse
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
 
     [JsonPropertyName("choices")]
-    public List<OpenAIChoice> Choices { get; set; } = [];
+    public List<ChatCompletionsProviderChoice> Choices { get; set; } = [];
 
     [JsonPropertyName("usage")]
-    public OpenAIUsage Usage { get; set; } = new();
+    public ChatCompletionsProviderUsage Usage { get; set; } = new();
 }
 
-public class OpenAIChoice
+public class ChatCompletionsProviderChoice
 {
     [JsonPropertyName("message")]
-    public OpenAIMessage Message { get; set; } = new();
+    public ChatCompletionsProviderMessage Message { get; set; } = new();
 
     [JsonPropertyName("finish_reason")]
     public string FinishReason { get; set; } = string.Empty;
 }
 
-public class OpenAIUsage
+public class ChatCompletionsProviderUsage
 {
     [JsonPropertyName("prompt_tokens")]
     public int PromptTokens { get; set; }

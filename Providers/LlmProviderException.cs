@@ -1,4 +1,4 @@
-namespace LlmService.Api.Providers.OpenAI;
+namespace LlmService.Api.Providers;
 
 public class LlmProviderException : Exception
 {

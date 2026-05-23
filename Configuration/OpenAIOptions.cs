@@ -1,6 +1,6 @@
 namespace LlmService.Api.Configuration;
 
-public class OpenAIOptions
+public class OpenAIOptions : IChatCompletionsProviderOptions
 {
     public const string Section = "OpenAI";
 

@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace LlmService.Api.Providers.OpenAI;
+namespace LlmService.Api.Providers.ChatCompletions;
 
-public class OpenAIRequest
+public class ChatCompletionsProviderRequest
 {
     [JsonPropertyName("model")]
     public string Model { get; set; } = string.Empty;
@@ -12,14 +12,14 @@ public class OpenAIRequest
     public int MaxTokens { get; set; }
 
     [JsonPropertyName("messages")]
-    public List<OpenAIMessage> Messages { get; set; } = [];
+    public List<ChatCompletionsProviderMessage> Messages { get; set; } = [];
 
     [JsonPropertyName("tools")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<OpenAITool>? Tools { get; set; }
+    public List<ChatCompletionsProviderTool>? Tools { get; set; }
 }
 
-public class OpenAIMessage
+public class ChatCompletionsProviderMessage
 {
     [JsonPropertyName("role")]
     public string Role { get; set; } = string.Empty;
@@ -34,19 +34,19 @@ public class OpenAIMessage
 
     [JsonPropertyName("tool_calls")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<OpenAIToolCall>? ToolCalls { get; set; }
+    public List<ChatCompletionsProviderToolCall>? ToolCalls { get; set; }
 }
 
-public class OpenAITool
+public class ChatCompletionsProviderTool
 {
     [JsonPropertyName("type")]
     public string Type { get; set; } = "function";
 
     [JsonPropertyName("function")]
-    public OpenAIFunction Function { get; set; } = new();
+    public ChatCompletionsProviderFunction Function { get; set; } = new();
 }
 
-public class OpenAIFunction
+public class ChatCompletionsProviderFunction
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
@@ -58,7 +58,7 @@ public class OpenAIFunction
     public JsonElement Parameters { get; set; }
 }
 
-public class OpenAIToolCall
+public class ChatCompletionsProviderToolCall
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
@@ -67,10 +67,10 @@ public class OpenAIToolCall
     public string Type { get; set; } = "function";
 
     [JsonPropertyName("function")]
-    public OpenAIToolCallFunction Function { get; set; } = new();
+    public ChatCompletionsProviderToolCallFunction Function { get; set; } = new();
 }
 
-public class OpenAIToolCallFunction
+public class ChatCompletionsProviderToolCallFunction
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;

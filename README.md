@@ -9,17 +9,22 @@ Required for `LlmService`:
 - `Jwt__Key`: shared HMAC signing key, minimum 32 characters
 - `Jwt__Issuer`: expected token issuer
 - `Jwt__Audience`: expected token audience
-- `OpenAI__ApiKey`: OpenAI API key used only by `LlmService`
-- `OpenAI__DefaultModel`: default OpenAI model
-- `OpenAI__BaseUrl`: defaults to `https://api.openai.com/v1/`
-- `OpenAI__TimeoutSeconds`: request timeout in seconds
+- `LlmProvider__DefaultProvider`: provider to use, defaults to `DeepSeek`
+- `DeepSeek__ApiKey`: DeepSeek API key used only by `LlmService`
+- `DeepSeek__DefaultModel`: default DeepSeek model, defaults to `deepseek-chat`
+- `DeepSeek__BaseUrl`: defaults to `https://api.deepseek.com/v1/`
+- `DeepSeek__TimeoutSeconds`: request timeout in seconds
+
+OpenAI remains available as a fallback provider by setting `LlmProvider__DefaultProvider=OpenAI` and configuring `OpenAI__ApiKey`, `OpenAI__DefaultModel`, `OpenAI__BaseUrl`, and `OpenAI__TimeoutSeconds`.
 
 Security notes:
 
 - Do not commit production JWT secrets.
 - Generate production `Jwt__Key` securely.
-- Do not expose `OpenAI__ApiKey` to consuming APIs.
+- Do not expose provider API keys to consuming APIs.
 - Do not log JWTs or provider API keys.
+
+For local Docker development, keep provider secrets in `.env`. This file is ignored by git.
 
 ## Authentication
 

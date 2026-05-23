@@ -1,5 +1,5 @@
 using LlmService.Api.Contracts;
-using LlmService.Api.Providers.OpenAI;
+using LlmService.Api.Providers;
 
 namespace LlmService.Api.Middleware;
 

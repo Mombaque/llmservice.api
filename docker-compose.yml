@@ -13,10 +13,11 @@ services:
       - Jwt__Key=${LLM_SERVICE_JWT_KEY}
       - Jwt__Issuer=${LLM_SERVICE_JWT_ISSUER}
       - Jwt__Audience=${LLM_SERVICE_JWT_AUDIENCE}
-      - OpenAI__ApiKey=${OPENAI_API_KEY}
-      - OpenAI__DefaultModel=${OPENAI_DEFAULT_MODEL}
-      - OpenAI__BaseUrl=https://api.openai.com/v1/
-      - OpenAI__TimeoutSeconds=60
+      - LlmProvider__DefaultProvider=${LlmProvider__DefaultProvider:-DeepSeek}
+      - DeepSeek__ApiKey=${DeepSeek__ApiKey}
+      - DeepSeek__DefaultModel=${DeepSeek__DefaultModel:-deepseek-chat}
+      - DeepSeek__BaseUrl=${DeepSeek__BaseUrl:-https://api.deepseek.com/v1/}
+      - DeepSeek__TimeoutSeconds=${DeepSeek__TimeoutSeconds:-60}
       - Resilience__RetryCount=2
       - Resilience__RetryBaseDelayMs=300
     networks:

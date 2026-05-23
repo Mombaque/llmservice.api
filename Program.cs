@@ -2,6 +2,8 @@ using System.Net.Http.Headers;
 using LlmService.Api.Configuration;
 using LlmService.Api.Middleware;
 using LlmService.Api.Providers;
+using LlmService.Api.Providers.ChatCompletions;
+using LlmService.Api.Providers.DeepSeek;
 using LlmService.Api.Providers.OpenAI;
 using LlmService.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,6 +31,8 @@ builder.Services
     .Validate(options => !string.IsNullOrWhiteSpace(options.Audience), "Jwt:Audience is required.")
     .ValidateOnStart();
 
+builder.Services.Configure<LlmProviderOptions>(builder.Configuration.GetSection(LlmProviderOptions.Section));
+builder.Services.Configure<DeepSeekOptions>(builder.Configuration.GetSection(DeepSeekOptions.Section));
 builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection(OpenAIOptions.Section));
 builder.Services.Configure<ResilienceOptions>(builder.Configuration.GetSection(ResilienceOptions.Section));
 
@@ -53,19 +57,31 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
-builder.Services.AddHttpClient<OpenAIClient>((sp, client) =>
+builder.Services.AddHttpClient("DeepSeek", (sp, client) =>
 {
-    var options = sp.GetRequiredService<IOptions<OpenAIOptions>>().Value;
-    if (string.IsNullOrWhiteSpace(options.ApiKey))
-        throw new InvalidOperationException("OpenAI API key is not configured.");
-
-    client.BaseAddress = new Uri(options.BaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(Math.Max(1, options.TimeoutSeconds));
-    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.ApiKey);
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    var options = sp.GetRequiredService<IOptions<DeepSeekOptions>>().Value;
+    ConfigureChatCompletionsProviderClient(client, options, "DeepSeek");
 });
 
-builder.Services.AddScoped<ILlmProviderClient, OpenAILlmProviderClient>();
+builder.Services.AddHttpClient("OpenAI", (sp, client) =>
+{
+    var options = sp.GetRequiredService<IOptions<OpenAIOptions>>().Value;
+    ConfigureChatCompletionsProviderClient(client, options, "OpenAI");
+});
+
+builder.Services.AddScoped<ChatCompletionsProviderClient>();
+builder.Services.AddScoped<DeepSeekLlmProviderClient>();
+builder.Services.AddScoped<OpenAILlmProviderClient>();
+builder.Services.AddScoped<ILlmProviderClient>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<LlmProviderOptions>>().Value;
+    return options.DefaultProvider.ToLowerInvariant() switch
+    {
+        "deepseek" => sp.GetRequiredService<DeepSeekLlmProviderClient>(),
+        "openai" => sp.GetRequiredService<OpenAILlmProviderClient>(),
+        _ => throw new InvalidOperationException($"Unsupported LLM provider '{options.DefaultProvider}'.")
+    };
+});
 builder.Services.AddScoped<LlmProviderFactory>();
 builder.Services.AddScoped<LlmCompletionService>();
 
@@ -77,5 +93,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+static void ConfigureChatCompletionsProviderClient(HttpClient client, IChatCompletionsProviderOptions options, string providerName)
+{
+    if (string.IsNullOrWhiteSpace(options.ApiKey))
+        throw new InvalidOperationException($"{providerName} API key is not configured.");
+
+    client.BaseAddress = new Uri(options.BaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(Math.Max(1, options.TimeoutSeconds));
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.ApiKey);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+}
 
 public partial class Program;

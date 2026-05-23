@@ -13,13 +13,15 @@ services:
         sync: false
       - key: Jwt__Audience
         sync: false
-      - key: OpenAI__ApiKey
+      - key: LlmProvider__DefaultProvider
+        value: DeepSeek
+      - key: DeepSeek__ApiKey
         sync: false
-      - key: OpenAI__DefaultModel
-        sync: false
-      - key: OpenAI__BaseUrl
-        value: https://api.openai.com/v1/
-      - key: OpenAI__TimeoutSeconds
+      - key: DeepSeek__DefaultModel
+        value: deepseek-chat
+      - key: DeepSeek__BaseUrl
+        value: https://api.deepseek.com/v1/
+      - key: DeepSeek__TimeoutSeconds
         value: 60
       - key: Resilience__RetryCount
         value: 2
