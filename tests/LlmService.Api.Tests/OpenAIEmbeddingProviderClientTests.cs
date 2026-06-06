@@ -49,28 +49,6 @@ public class OpenAIEmbeddingProviderClientTests
         Assert.Equal("hello", payload.GetProperty("input")[0].GetString());
     }
 
-    [Fact]
-    public async Task CreateEmbeddingAsync_UsesRequestModelWhenProvided()
-    {
-        using var handler = new CapturingHandler(new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = JsonContent.Create(new
-            {
-                data = Array.Empty<object>(),
-                usage = new { prompt_tokens = 1, total_tokens = 1 }
-            })
-        });
-        var provider = CreateProvider(handler);
-
-        await provider.CreateEmbeddingAsync(
-            new EmbeddingRequest { Inputs = ["hello"], Model = "custom-embedding" },
-            "request-1",
-            CancellationToken.None);
-
-        var payload = JsonDocument.Parse(handler.Body ?? "{}").RootElement;
-        Assert.Equal("custom-embedding", payload.GetProperty("model").GetString());
-    }
-
     private static OpenAIEmbeddingProviderClient CreateProvider(HttpMessageHandler handler)
     {
         var httpClient = new HttpClient(handler)

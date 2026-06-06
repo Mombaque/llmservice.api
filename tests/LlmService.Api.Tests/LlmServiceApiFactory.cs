@@ -68,7 +68,7 @@ public class LlmServiceApiFactory : WebApplicationFactory<Program>
             return Task.FromResult(new EmbeddingResponse
             {
                 Provider = "FakeOpenAI",
-                Model = request.Model ?? "embedding-test",
+                Model = "embedding-test",
                 RequestId = requestId,
                 Usage = new LlmUsageDto
                 {

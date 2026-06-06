@@ -15,7 +15,7 @@ services:
       - Jwt__Audience=llmservice-api
       - LlmProvider__DefaultProvider=DeepSeek
       - LlmProvider__DefaultEmbeddingProvider=${LlmProvider__DefaultEmbeddingProvider:-OpenAI}
-      - DeepSeek__ApiKey=sk-cb4d5c0987e64e64bf6ddbdb2b3a9835
+      - DeepSeek__ApiKey=${DeepSeek__ApiKey}
       - DeepSeek__DefaultModel=${DeepSeek__DefaultModel:-deepseek-chat}
       - DeepSeek__BaseUrl=${DeepSeek__BaseUrl:-https://api.deepseek.com/v1/}
       - DeepSeek__TimeoutSeconds=${DeepSeek__TimeoutSeconds:-60}

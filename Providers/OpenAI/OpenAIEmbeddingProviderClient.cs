@@ -19,7 +19,7 @@ public class OpenAIEmbeddingProviderClient(
         string requestId,
         CancellationToken cancellationToken)
     {
-        var model = request.Model ?? options.Value.DefaultEmbeddingModel;
+        var model = options.Value.DefaultEmbeddingModel;
         if (string.IsNullOrWhiteSpace(model))
             throw new LlmProviderException("llm_model_not_configured", "OpenAI embedding model is not configured.", StatusCodes.Status500InternalServerError);
 
