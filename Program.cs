@@ -4,6 +4,7 @@ using LlmService.Api.Middleware;
 using LlmService.Api.Providers;
 using LlmService.Api.Providers.ChatCompletions;
 using LlmService.Api.Providers.DeepSeek;
+using LlmService.Api.Providers.Embeddings;
 using LlmService.Api.Providers.OpenAI;
 using LlmService.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -70,8 +71,10 @@ builder.Services.AddHttpClient("OpenAI", (sp, client) =>
 });
 
 builder.Services.AddScoped<ChatCompletionsProviderClient>();
+builder.Services.AddScoped<EmbeddingsProviderClient>();
 builder.Services.AddScoped<DeepSeekLlmProviderClient>();
 builder.Services.AddScoped<OpenAILlmProviderClient>();
+builder.Services.AddScoped<OpenAIEmbeddingProviderClient>();
 builder.Services.AddScoped<ILlmProviderClient>(sp =>
 {
     var options = sp.GetRequiredService<IOptions<LlmProviderOptions>>().Value;
@@ -82,8 +85,19 @@ builder.Services.AddScoped<ILlmProviderClient>(sp =>
         _ => throw new InvalidOperationException($"Unsupported LLM provider '{options.DefaultProvider}'.")
     };
 });
+builder.Services.AddScoped<IEmbeddingProviderClient>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<LlmProviderOptions>>().Value;
+    return options.DefaultEmbeddingProvider.ToLowerInvariant() switch
+    {
+        "openai" => sp.GetRequiredService<OpenAIEmbeddingProviderClient>(),
+        _ => throw new InvalidOperationException($"Unsupported embedding provider '{options.DefaultEmbeddingProvider}'.")
+    };
+});
 builder.Services.AddScoped<LlmProviderFactory>();
+builder.Services.AddScoped<EmbeddingProviderFactory>();
 builder.Services.AddScoped<LlmCompletionService>();
+builder.Services.AddScoped<LlmEmbeddingService>();
 
 var app = builder.Build();
 

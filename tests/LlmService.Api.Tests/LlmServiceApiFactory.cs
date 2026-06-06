@@ -27,13 +27,15 @@ public class LlmServiceApiFactory : WebApplicationFactory<Program>
                 ["Jwt:Issuer"] = JwtIssuer,
                 ["Jwt:Audience"] = JwtAudience,
                 ["OpenAI:ApiKey"] = "test-openai-key",
-                ["OpenAI:DefaultModel"] = "gpt-test"
+                ["OpenAI:DefaultModel"] = "gpt-test",
+                ["OpenAI:DefaultEmbeddingModel"] = "embedding-test"
             });
         });
 
         builder.ConfigureServices(services =>
         {
             services.AddScoped<ILlmProviderClient, FakeLlmProviderClient>();
+            services.AddScoped<IEmbeddingProviderClient, FakeEmbeddingProviderClient>();
         });
     }
 
@@ -54,6 +56,35 @@ public class LlmServiceApiFactory : WebApplicationFactory<Program>
         });
 
         return tokenHandler.WriteToken(token);
+    }
+
+
+    private sealed class FakeEmbeddingProviderClient : IEmbeddingProviderClient
+    {
+        public string ProviderName => "FakeOpenAI";
+
+        public Task<EmbeddingResponse> CreateEmbeddingAsync(EmbeddingRequest request, string requestId, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new EmbeddingResponse
+            {
+                Provider = "FakeOpenAI",
+                Model = request.Model ?? "embedding-test",
+                RequestId = requestId,
+                Usage = new LlmUsageDto
+                {
+                    InputTokens = 2,
+                    OutputTokens = 0
+                },
+                Embeddings =
+                [
+                    new EmbeddingDataDto
+                    {
+                        Index = 0,
+                        Vector = [0.1f, 0.2f, 0.3f]
+                    }
+                ]
+            });
+        }
     }
 
     private sealed class FakeLlmProviderClient : ILlmProviderClient

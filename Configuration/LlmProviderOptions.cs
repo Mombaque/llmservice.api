@@ -5,4 +5,5 @@ public class LlmProviderOptions
     public const string Section = "LlmProvider";
 
     public string DefaultProvider { get; set; } = "DeepSeek";
+    public string DefaultEmbeddingProvider { get; set; } = "OpenAI";
 }

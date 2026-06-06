@@ -9,13 +9,16 @@ Required for `LlmService`:
 - `Jwt__Key`: shared HMAC signing key, minimum 32 characters
 - `Jwt__Issuer`: expected token issuer
 - `Jwt__Audience`: expected token audience
-- `LlmProvider__DefaultProvider`: provider to use, defaults to `DeepSeek`
+- `LlmProvider__DefaultProvider`: chat provider to use, defaults to `DeepSeek`
+- `LlmProvider__DefaultEmbeddingProvider`: embedding provider to use, defaults to `OpenAI`
 - `DeepSeek__ApiKey`: DeepSeek API key used only by `LlmService`
 - `DeepSeek__DefaultModel`: default DeepSeek model, defaults to `deepseek-chat`
 - `DeepSeek__BaseUrl`: defaults to `https://api.deepseek.com/v1/`
 - `DeepSeek__TimeoutSeconds`: request timeout in seconds
+- `OpenAI__ApiKey`: OpenAI API key used for embeddings and optional OpenAI chat
+- `OpenAI__DefaultEmbeddingModel`: default embedding model, defaults to `text-embedding-3-small`
 
-OpenAI remains available as a fallback provider by setting `LlmProvider__DefaultProvider=OpenAI` and configuring `OpenAI__ApiKey`, `OpenAI__DefaultModel`, `OpenAI__BaseUrl`, and `OpenAI__TimeoutSeconds`.
+OpenAI remains available as a fallback chat provider by setting `LlmProvider__DefaultProvider=OpenAI` and configuring `OpenAI__ApiKey`, `OpenAI__DefaultModel`, `OpenAI__BaseUrl`, and `OpenAI__TimeoutSeconds`. Embeddings use `LlmProvider__DefaultEmbeddingProvider` and `OpenAI__DefaultEmbeddingModel`.
 
 Security notes:
 
@@ -46,8 +49,9 @@ Required JWT claims:
 
 - Public: `GET /health`
 - Private: `POST /v1/chat/completions`
+- Private: `POST /v1/embeddings`
 
-## Example Request
+## Chat Completion Example
 
 ```bash
 curl -X POST "http://localhost:5004/v1/chat/completions" \
@@ -67,6 +71,19 @@ curl -X POST "http://localhost:5004/v1/chat/completions" \
     ]
   }'
 ```
+
+## Embedding Example
+
+```bash
+curl -X POST "http://localhost:5004/v1/embeddings" \
+  -H "Authorization: Bearer <jwt-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "inputs": ["Text to embed"]
+  }'
+```
+
+The response contains normalized embedding vectors plus provider, model, request id, and token usage. LlmService does not store embeddings or perform retrieval.
 
 ## Consuming API Guidance
 

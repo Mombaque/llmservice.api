@@ -7,6 +7,18 @@ namespace LlmService.Api.Tests;
 
 public class AuthIntegrationTests : IClassFixture<LlmServiceApiFactory>
 {
+    private const string ValidEmbeddingRequestBody = """
+        {
+          "inputs": ["Hello"]
+        }
+        """;
+
+    private const string EmptyEmbeddingRequestBody = """
+        {
+          "inputs": []
+        }
+        """;
+
     private const string ValidRequestBody = """
         {
           "messages": [
@@ -103,12 +115,82 @@ public class AuthIntegrationTests : IClassFixture<LlmServiceApiFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+
+    [Fact]
+    public async Task Embeddings_WithoutToken_Returns401()
+    {
+        using var request = CreateEmbeddingRequest(ValidEmbeddingRequestBody);
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Embeddings_WithInvalidToken_Returns401()
+    {
+        using var request = CreateEmbeddingRequest(ValidEmbeddingRequestBody);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "invalid-token");
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Embeddings_WithUnauthorizedService_Returns403()
+    {
+        using var request = CreateEmbeddingRequest(ValidEmbeddingRequestBody);
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            LlmServiceApiFactory.CreateToken("unknown-api"));
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Embeddings_WithValidToken_Returns200()
+    {
+        using var request = CreateEmbeddingRequest(ValidEmbeddingRequestBody);
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            LlmServiceApiFactory.CreateToken("morita-api"));
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Embeddings_WithEmptyInput_Returns400()
+    {
+        using var request = CreateEmbeddingRequest(EmptyEmbeddingRequestBody);
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            LlmServiceApiFactory.CreateToken("morita-api"));
+
+        var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     [Fact]
     public async Task Health_RemainsPublic()
     {
         var response = await _client.GetAsync("/health");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+
+    private static HttpRequestMessage CreateEmbeddingRequest(string body)
+    {
+        return new HttpRequestMessage(HttpMethod.Post, "/v1/embeddings")
+        {
+            Content = new StringContent(body, Encoding.UTF8, "application/json")
+        };
     }
 
     private static HttpRequestMessage CreateChatRequest()

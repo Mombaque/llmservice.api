@@ -15,6 +15,8 @@ services:
         sync: false
       - key: LlmProvider__DefaultProvider
         value: DeepSeek
+      - key: LlmProvider__DefaultEmbeddingProvider
+        value: OpenAI
       - key: DeepSeek__ApiKey
         sync: false
       - key: DeepSeek__DefaultModel
@@ -22,6 +24,14 @@ services:
       - key: DeepSeek__BaseUrl
         value: https://api.deepseek.com/v1/
       - key: DeepSeek__TimeoutSeconds
+        value: 60
+      - key: OpenAI__ApiKey
+        sync: false
+      - key: OpenAI__DefaultEmbeddingModel
+        value: text-embedding-3-small
+      - key: OpenAI__BaseUrl
+        value: https://api.openai.com/v1/
+      - key: OpenAI__TimeoutSeconds
         value: 60
       - key: Resilience__RetryCount
         value: 2
